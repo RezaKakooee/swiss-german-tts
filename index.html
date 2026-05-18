@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Text vs. Phoneme Intermediates for Low-Resource Swiss German TTS</title>
+    <meta
+      name="description"
+      content="Project page for a SwissText 2026 paper comparing text and phoneme intermediates for low-resource Swiss German text-to-speech."
+    >
+    <meta property="og:title" content="Text vs. Phoneme Intermediates for Swiss German TTS">
+    <meta property="og:description" content="DE-TTS, CH-TTS, and PH-TTS pipelines evaluated with STT metrics and human MOS.">
+    <meta property="og:type" content="article">
+    <meta property="og:image" content="tts_branches.jpg">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="mark" href="#top">SwissText 2026</a>
+      <nav aria-label="Page navigation">
+        <a href="#pipelines">Pipelines</a>
+        <a href="#results">Results</a>
+        <a href="#cite">Cite</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="paper-title">
+        <div class="hero__copy">
+          <p class="eyebrow">Low-resource Swiss German TTS</p>
+          <h1 id="paper-title">
+            Text vs. phoneme intermediates for Swiss German speech synthesis
+          </h1>
+          <p class="authors">
+            Reza Kakooee, Vincenzo Timmel, Daniel Perruchoud, Michael Graber,
+            and Manfred Vogel
+          </p>
+          <p class="affiliation">
+            Institute for Data Science, School of Computer Science, FHNW
+          </p>
+          <div class="actions" aria-label="Paper links">
+            <a class="button button--primary" href="https://openreview.net/forum?id=l0JopW1610&referrer=%5BAuthor%20Console%5D(%2Fgroup%3Fid%3DSwissText.org%2F2026%2FConference%2FAuthors%23your-submissions)">OpenReview</a>
+            <a class="button" href="#results">Results</a>
+            <a class="button" href="#cite">BibTeX</a>
+          </div>
+        </div>
+
+        <div class="signal-panel" aria-label="Pipeline summary">
+          <div class="signal-panel__top">
+            <span>DE Text</span>
+            <span>CH Voice</span>
+          </div>
+          <div class="waveform" aria-hidden="true">
+            <span style="--h: 24%"></span>
+            <span style="--h: 58%"></span>
+            <span style="--h: 86%"></span>
+            <span style="--h: 44%"></span>
+            <span style="--h: 72%"></span>
+            <span style="--h: 34%"></span>
+            <span style="--h: 66%"></span>
+            <span style="--h: 92%"></span>
+            <span style="--h: 48%"></span>
+            <span style="--h: 70%"></span>
+            <span style="--h: 30%"></span>
+            <span style="--h: 54%"></span>
+          </div>
+          <div class="route-list">
+            <div><b>DE-TTS</b><span>direct High German to Swiss German speech</span></div>
+            <div><b>CH-TTS</b><span>translate to Swiss German text, then synthesize</span></div>
+            <div><b>PH-TTS</b><span>convert to fused phoneme strings, then synthesize</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="abstract-strip" aria-label="Abstract summary">
+        <p>
+          Swiss German has no standardized orthography, while practical user input is often written
+          in High German. This paper asks which intermediate representation should sit between
+          High German input and Swiss German speech: High German text, Swiss German text, or
+          phoneme strings.
+        </p>
+      </section>
+
+      <section id="pipelines" class="section">
+        <div class="section__head">
+          <p class="eyebrow">Experiment</p>
+          <h2>Three routes from High German text to Swiss German voice</h2>
+          <p>
+            The same task is evaluated through three different intermediate representations. The
+            pipeline figure shows where translation, phoneme conversion, synthesis, and closed-loop
+            STT scoring enter the system.
+          </p>
+        </div>
+
+        <div class="pipeline-grid">
+          <article class="route route--de">
+            <span class="route__tag">Route 01</span>
+            <h3>DE-TTS</h3>
+            <p>Use High German text directly as the conditioning input for Swiss German speech.</p>
+          </article>
+          <article class="route route--ch">
+            <span class="route__tag">Route 02</span>
+            <h3>CH-TTS</h3>
+            <p>Translate High German to Swiss German text first, then synthesize Swiss German speech.</p>
+          </article>
+          <article class="route route--ph">
+            <span class="route__tag">Route 03</span>
+            <h3>PH-TTS</h3>
+            <p>Convert speech-derived phoneme supervision into fused word-level phoneme strings.</p>
+          </article>
+        </div>
+
+        <figure class="figure-card figure-card--wide">
+          <img src="tts_branches.jpg" alt="Diagram of DE-TTS, CH-TTS, and PH-TTS branches with STT-based evaluation.">
+          <figcaption>
+            <strong>Pipeline overview.</strong>
+            DE-TTS is the direct route. CH-TTS adds a High German to Swiss German translation step.
+            PH-TTS derives phoneme supervision from Swiss German audio and uses fused phoneme strings
+            as the synthesis intermediate. All synthesized outputs are transcribed back to High German
+            for closed-loop objective scoring.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section class="section section--split" aria-labelledby="models-title">
+        <div class="section__head">
+          <p class="eyebrow">Backbones</p>
+          <h2 id="models-title">A compact model and a speech-LLM baseline</h2>
+          <p>
+            The paper fine-tunes two contrasting TTS backbones to separate representation effects from
+            synthesis capacity.
+          </p>
+        </div>
+        <div class="model-board">
+          <article>
+            <span>SpeechT5</span>
+            <p>A lightweight encoder-decoder baseline for data-efficient fine-tuning.</p>
+          </article>
+          <article>
+            <span>Orpheus</span>
+            <p>A Llama-based speech generation model used as the stronger synthesis baseline.</p>
+          </article>
+          <article>
+            <span>Full vs. half data</span>
+            <p>Orpheus is also trained with half the data to test robustness under lower supervision.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="results" class="section results">
+        <div class="section__head">
+          <p class="eyebrow">Results</p>
+          <h2>Human listeners prefer the Swiss German text route</h2>
+          <p>
+            Closed-loop STT metrics are useful diagnostics, but they do not fully match human
+            preference. MOS consistently ranks CH-TTS highest among synthesized systems.
+          </p>
+        </div>
+
+        <div class="score-wall">
+          <article class="score-card score-card--winner">
+            <span class="score-card__label">Best synthesized MOS</span>
+            <strong>CH-TTS</strong>
+            <p>Highest listener preference for both SpeechT5 and Orpheus.</p>
+          </article>
+          <article class="score-card">
+            <span class="score-card__label">SpeechT5 CH-TTS</span>
+            <strong>4.00</strong>
+            <p>Close to original recordings at 4.04 MOS.</p>
+          </article>
+          <article class="score-card">
+            <span class="score-card__label">Orpheus CH-TTS</span>
+            <strong>4.67</strong>
+            <p>Near-original quality compared with 4.86 MOS for real recordings.</p>
+          </article>
+          <article class="score-card">
+            <span class="score-card__label">Half-data CH-TTS</span>
+            <strong>4.56</strong>
+            <p>Most stable Orpheus branch when training data is reduced.</p>
+          </article>
+        </div>
+
+        <div class="results-layout">
+          <figure class="figure-card">
+            <img src="stt_metrics_comparison_st5.png" alt="Boxplot comparison of WER and SacreBLEU metrics for DE-TTS, CH-TTS, and PH-TTS.">
+            <figcaption>
+              <strong>Closed-loop STT metrics.</strong>
+              Transcript-overlap scores can favor the direct DE-TTS route because the reference is
+              High German text, even when listeners prefer the more dialect-appropriate CH-TTS output.
+            </figcaption>
+          </figure>
+          <div class="takeaways">
+            <h3>What the metrics say</h3>
+            <ul>
+              <li>WER and SacreBLEU reliably penalize PH-TTS in the current setup.</li>
+              <li>Objective metrics do not capture the preference gap between DE-TTS and CH-TTS.</li>
+              <li>PH-TTS becomes closer to DE-TTS under the half-data Orpheus setting, suggesting phoneme intermediates may become more competitive when resources are scarcer.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section__head">
+          <p class="eyebrow">Interpretation</p>
+          <h2>Phonemes are promising, but the supervision pipeline is the bottleneck</h2>
+          <p>
+            PH-TTS is not evaluated as an oracle phoneme condition. Its phoneme strings are
+            automatically inferred from audio and then fused into compact strings, so upstream noise
+            and representation mismatch directly affect synthesis quality.
+          </p>
+        </div>
+        <div class="diagnosis">
+          <div>
+            <span>Current bottleneck</span>
+            <p>Noisy audio-derived phonemes plus discrete-to-fused conversion errors.</p>
+          </div>
+          <div>
+            <span>Promising fix</span>
+            <p>Predict fused phoneme strings directly and use a phoneme-native tokenizer.</p>
+          </div>
+          <div>
+            <span>Deployment hint</span>
+            <p>For now, CH-TTS with Orpheus offers the best quality and robustness trade-off.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="cite" class="section citation">
+        <div class="section__head">
+          <p class="eyebrow">Citation</p>
+          <h2>BibTeX</h2>
+        </div>
+        <pre><code>@inproceedings{kakooee2026swisstext,
+  title  = {Text vs. Phoneme Intermediates for Low-Resource Swiss German Text-to-Speech},
+  author = {Kakooee, Reza and Timmel, Vincenzo and Perruchoud, Daniel and Graber, Michael and Vogel, Manfred},
+  booktitle = {Proceedings of SwissText},
+  year   = {2026}
+}</code></pre>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>SwissText 2026. FHNW Institute for Data Science.</p>
+      <div>
+        <a href="https://openreview.net/forum?id=l0JopW1610&referrer=%5BAuthor%20Console%5D(%2Fgroup%3Fid%3DSwissText.org%2F2026%2FConference%2FAuthors%23your-submissions)">OpenReview</a>
+        <a href="https://x.com/rezakakooee">X</a>
+        <a href="https://www.linkedin.com/in/reza-kakooee/">LinkedIn</a>
+      </div>
+    </footer>
+  </body>
+</html>
